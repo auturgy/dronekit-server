@@ -1,6 +1,10 @@
 import com.typesafe.sbt.SbtStartScript
 
-scalaVersion in ThisBuild := "2.10.4" 
+scalaVersion in ThisBuild := "2.10.4"
+
+// Needed for the old java7 install on the ardupilot servers
+scalacOptions += "-target:jvm-1.7"
+javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
 EclipseKeys.createSrc in ThisBuild := EclipseCreateSrc.Default + EclipseCreateSrc.Resource + EclipseCreateSrc.Managed // Include resources dir in eclipse classpath
 
@@ -41,7 +45,3 @@ publishTo := None
 seq(SbtStartScript.startScriptForClassesSettings: _*)
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
-
-
-
-
