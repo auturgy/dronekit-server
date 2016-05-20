@@ -408,7 +408,7 @@ object User extends DapiRecordCompanion[User] with Logging {
         // If we don't find a root account - make a new one (must be a virgin/damaged DB)
         // If your run is failing on the following line, add a definition to ~/nestor.conf
         val psw = MockAkka.config.getString("dapi.defaultRootPsw")
-        val u = create("root", psw, Some("kevin@3drobotics.com"), Some("Kevin Hester"), group = "admin")
+        val u = create("root", psw, Some("kevinh@geeksville.com"), Some("Kevin Hester"), group = "admin")
         Some(u)
       } else {
         debug(s"User $id not found in DB")
