@@ -16,9 +16,9 @@ object Global {
   def system = MockAkka.system
 
   val scheme = "http" // eventually https
-  val hostname = "www.droneshare.com"
+  val hostname = "droneshare.ardupilot.org"
   val rootUrl = s"$scheme://$hostname"
-  val senderEmail = "support@droneshare.com"
+  val senderEmail = "support@droneshare.ardupilot.org"
   val appName = "Droneshare"
 
   val simServerHostname = "localhost"
