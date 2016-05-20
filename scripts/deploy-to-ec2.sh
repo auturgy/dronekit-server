@@ -1,11 +1,17 @@
 echo "This script will deploy to ec2"
 
 set -e
+SRCDIR=`readlink -f ..`
+pushd $SRCDIR
 sbt clean assembly
+popd
 
-export EC2_HOSTNAME=api.3dr.com
+export EC2_HOSTNAME=ichi.ardupilot.org
+SSH_USER=kevinh
+export SSH_OPTS="ssh -l $SSH_USER"
 
-./ssh-ec2 sudo skill java
+echo "Killing old daemon"
+./ssh-ec2 skill java
 
 echo
 echo Copying up new version
@@ -13,13 +19,14 @@ echo
 
 # we send up src as a super skanky hack because our assembly still accidentally references
 # src/main/webapp/WEB-INF
-./ssh-ec2 cp apihub-assembly-\*.jar backup
-rsync -avz -e "ssh -l ubuntu -i /home/kevinh/.ssh/id_dsa_dronehub" drone-mysql.sh target/scala-2.10/apihub-assembly-*.jar ubuntu@$EC2_HOSTNAME:
-rsync -avz -e "ssh -l ubuntu -i /home/kevinh/.ssh/id_dsa_dronehub" src/main/webapp ubuntu@$EC2_HOSTNAME:src/main
-rsync -avz -e "ssh -l ubuntu -i /home/kevinh/.ssh/id_dsa_dronehub" ardupilot/Tools/LogAnalyzer ubuntu@$EC2_HOSTNAME:
+./ssh-ec2 cp apihub-assembly-\*.jar backup || true
+./ssh-ec2 mkdir -p src
+rsync -avz -e "$SSH_OPTS" $SRCDIR/target/scala-2.10/apihub-assembly-*.jar $SSH_USER@$EC2_HOSTNAME:
+rsync -avz -e "$SSH_OPTS" $SRCDIR/src/main/webapp $SSH_USER@$EC2_HOSTNAME:src/main
+rsync -avz -e "$SSH_OPTS" $SRCDIR/ardupilot/Tools/LogAnalyzer $SSH_USER@$EC2_HOSTNAME:
 
-rsync -avz -e "ssh -l ubuntu -i /home/kevinh/.ssh/id_dsa_dronehub" S98nestor-startup ubuntu@$EC2_HOSTNAME:/tmp
-./ssh-ec2 sudo mv /tmp/S98nestor-startup /etc/rc2.d
+rsync -avz -e "$SSH_OPTS" ./S98nestor-startup $SSH_USER@$EC2_HOSTNAME:/tmp
+# ./ssh-ec2 sudo mv /tmp/S98nestor-startup /etc/rc2.d
 
 TAGNAME=deploy-`date +%F-%H%M%S`
 echo "Tagging new deployment: $TAGNAME"

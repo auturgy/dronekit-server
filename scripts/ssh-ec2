@@ -1,0 +1,5 @@
+export EC2_HOSTNAME=ichi.ardupilot.org
+export SSH_OPTS="ssh -l kevinh"
+
+echo "SSH connect to current EC2 target: $EC2_HOSTNAME"
+$SSH_OPTS $EC2_HOSTNAME $@
